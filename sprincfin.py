@@ -1,6 +1,9 @@
 import os
+import collections
 
-# Select file
+#-------------------------------------
+# Ask for the input file
+#-------------------------------------
 
 all_files = os.listdir();
 txt_files = [];
@@ -15,11 +18,14 @@ for n, i in enumerate(txt_files):
     print('['+str(n)+']',i);
 
 print('')
-bestand = input('The number of the file you want to use: ');
-bestand = open(txt_files[int(bestand)]).readlines();
+spr_file = input('The number of the file you want to use: ');
+spr_file = open(txt_files[int(spr_file)]).readlines();
 
-# Select cells to investigate
-cells = bestand[0].split('\t');
+#-------------------------------------
+# Ask for the cells to investigate
+#-------------------------------------
+
+cells = spr_file[0].split('\t');
 
 print('In this file, the following columns were found:');
 
@@ -31,7 +37,10 @@ columns = input('Please give a comma-separated list of all columns you want to i
 for n, i in enumerate(columns):
     columns[n] = int(i);
 
-# Select the base
+#-------------------------------------
+# Ask for the base
+#-------------------------------------
+
 base = '';
 
 while base not in columns:
@@ -40,10 +49,61 @@ while base not in columns:
     
     base = int(input('Which one of these columns will be the basic column? '));
 
-#Start looking for inconsistencies
+#-------------------------------------
+# Start looking for inconsistencies
+#-------------------------------------
+
 columns_string = '';
 
 for i in columns:
     columns_string += ' ' + str(cells[i]);
 
 print('Comparing colums <' + columns_string[1:] + '> on the basis of ' + cells[base] + '...');
+
+result = {};
+
+for i in spr_file:
+    #Get the cells and the base
+    cells = i.split('\t');
+    basevalue = cells[base];
+
+    #Add this basevalue to the results if you weren't tracking it
+    try:
+        result[basevalue];
+    except KeyError:
+        result[basevalue] = [];
+
+    #Extract which cells are relevant and save them with the base
+    relevant_cells = [];
+    for j in columns:
+        if j != basevalue:
+            relevant_cells.append(cells[j]);
+
+    result[basevalue].append(relevant_cells);
+
+#--------------------------------------
+# Show the results
+#--------------------------------------
+
+for k,v in result.items():
+    if len(v) > 1:
+
+        #Make each group of cells into a string, for easy comparison
+        result_strings = [];
+        for i in v:
+            result_strings.append(str(i));
+
+        #Count what you have and ignore this row if there is only one possibility
+        countings = collections.Counter(result_strings)
+
+        if len(countings) == 1:
+            continue;
+
+        #When inconsistency is found, change this into something readable        
+        print('');
+        print(k);
+
+        countings_str = '';
+
+        for kc,vc in countings.items():
+            print(str(vc) + 'x ' + kc);
