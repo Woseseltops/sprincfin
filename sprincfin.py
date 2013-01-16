@@ -50,6 +50,14 @@ while base not in columns:
     base = int(input('Which one of these columns will be the basic column? '));
 
 #-------------------------------------
+# Prepare the output file
+#-------------------------------------
+
+outp = input('Name of the outputfile: ') + '.txt';
+open(outp,'w');
+f = open(outp,'a');
+
+#-------------------------------------
 # Start looking for inconsistencies
 #-------------------------------------
 
@@ -58,7 +66,7 @@ columns_string = '';
 for i in columns:
     columns_string += ' ' + str(cells[i]);
 
-print('Comparing colums <' + columns_string[1:] + '> on the basis of ' + cells[base] + '...');
+f.write('Comparing colums <' + columns_string[1:] + '> on the basis of ' + cells[base] + '...\n');
 
 result = {};
 
@@ -100,10 +108,12 @@ for k,v in result.items():
             continue;
 
         #When inconsistency is found, change this into something readable        
-        print('');
-        print(k);
+        f.write('\n');
+        f.write(k+'\n');
 
         countings_str = '';
 
         for kc,vc in countings.items():
-            print(str(vc) + 'x ' + kc);
+            f.write(str(vc) + 'x ' + kc+'\n');
+
+#Wat doet ie met lege cellen bij een bepaalde categorie?
